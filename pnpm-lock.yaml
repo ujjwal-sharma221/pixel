@@ -32,6 +32,9 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.31.0
         version: 3.31.0(react@19.1.0)
+      '@types/lodash':
+        specifier: ^4.17.16
+        version: 4.17.16
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -44,6 +47,9 @@ importers:
       graphql:
         specifier: ^16.8.1
         version: 16.10.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       lucide-react:
         specifier: ^0.501.0
         version: 0.501.0(react@19.1.0)

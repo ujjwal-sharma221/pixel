@@ -161,7 +161,7 @@ export interface Media {
  */
 export interface Category {
   id: string;
-  title: string;
+  name: string;
   slug: string;
   color?: string | null;
   parent?: (string | null) | Category;
@@ -272,7 +272,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
-  title?: T;
+  name?: T;
   slug?: T;
   color?: T;
   parent?: T;
