@@ -12,6 +12,7 @@ export const useDropdownPosition = (
     let left = rect.left + window.scrollX;
     const top = rect.bottom + window.scrollY;
 
+    // Check if dropdown is outside the viewport on the right side
     if (left + dropdownWidth > window.innerWidth) {
       left = rect.right + window.scrollX - dropdownWidth;
 

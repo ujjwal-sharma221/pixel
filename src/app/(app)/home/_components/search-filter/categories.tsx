@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -13,18 +14,20 @@ interface CategoriesProps {
 
 export function Categories({ data }: CategoriesProps) {
   return (
-    <div>
-      {data.map((category: Category) => {
-        return (
-          <div key={category.id}>
-            <CategoryDropdown
-              category={category}
-              isActive={false}
-              isNavigationHovered={false}
-            />
-          </div>
-        );
-      })}
+    <div className="relative w-full">
+      <div className="flex flex-nowrap items-center gap-2">
+        {data.map((category: Category) => {
+          return (
+            <div key={category.id}>
+              <CategoryDropdown
+                category={category}
+                isActive={false}
+                isNavigationHovered={false}
+              />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -51,6 +54,7 @@ function CategoryDropdown({
   };
 
   const onMouseLeave = () => setIsOpen(false);
+  const dropdownPosition = getDropdownPosition();
 
   return (
     <div
@@ -68,7 +72,8 @@ function CategoryDropdown({
         >
           {category.name}
         </Button>
-        {category.subcategories && category && (
+
+        {category.subcategories && category.subcategories.length > 0 && (
           <div
             className={cn(
               "opacity-0 absolute -bottom-3 w-0 h-0 border-l-[10px] border-r-[10px] border-b-[10px] border-l-transparent border-r-transparent border-b-black left-1/2 -translate-x-1/2",
@@ -76,6 +81,55 @@ function CategoryDropdown({
             )}
           ></div>
         )}
+      </div>
+
+      <SubCategoryMenu
+        category={category}
+        isOpen={isOpen}
+        position={dropdownPosition}
+      />
+    </div>
+  );
+}
+
+interface SubCategoryMenuProps {
+  category: Category;
+  isOpen: boolean;
+  position: { top: number; left: number };
+}
+
+function SubCategoryMenu({ category, isOpen, position }: SubCategoryMenuProps) {
+  if (
+    !isOpen ||
+    !category.subcategories ||
+    !category.subcategories.length === 0
+  ) {
+    return null;
+  }
+
+  const backgroundColor = category.color || "#F5F5F5";
+
+  return (
+    <div
+      className="fixed z-100"
+      style={{ top: position.top, left: position.left }}
+    >
+      <div className="h-3 w-60" />
+      <div
+        style={{ backgroundColor }}
+        className="text-black rounded-md overflow-hidden border w-60 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] -translate-x-[2px] -translate-y-[2px]"
+      >
+        <div>
+          {category.subcategories?.map((sub: Category) => (
+            <Link
+              key={sub.slug}
+              href={"/"}
+              className="w-full text-left p-4 hover:bg-black text-white hover:text-white flex justify-between items-center underline font-medium"
+            >
+              {sub.name}
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
