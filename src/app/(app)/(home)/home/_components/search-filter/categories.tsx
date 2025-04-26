@@ -4,24 +4,34 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
-import { Category } from "@/payload-types";
 import { Button } from "@/components/ui/button";
+import { CustomCategory } from "../../../types";
 import { useDropdownPosition } from "./use-dropdown-position";
 
 interface CategoriesProps {
-  data: any;
+  data: CustomCategory[];
 }
 
 export function Categories({ data }: CategoriesProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const viewAllRef = useRef<HTMLDivElement>(null);
+
+  const [visibleCount, setVisibleCount] = useState(data.length);
+  const [isAnyHovered, setIsAnyHovered] = useState(false);
+
+  const activeCategory = "all";
+  const activeCategoryIndex = data.find((cat) => cat.slug === activeCategory);
+
   return (
     <div className="relative w-full">
       <div className="flex flex-nowrap items-center gap-2">
-        {data.map((category: Category) => {
+        {data.map((category) => {
           return (
             <div key={category.id}>
               <CategoryDropdown
                 category={category}
-                isActive={false}
+                isActive={activeCategory === category.slug}
                 isNavigationHovered={false}
               />
             </div>
@@ -33,7 +43,7 @@ export function Categories({ data }: CategoriesProps) {
 }
 
 interface CategoryDropdownProps {
-  category: Category;
+  category: CustomCategory;
   isActive?: boolean;
   isNavigationHovered?: boolean;
 }
@@ -67,7 +77,10 @@ function CategoryDropdown({
         <Button
           className={cn(
             "hover:bg-transparent hover:border-2 hover:text-black rounded-full px-4",
-            isActive && !isNavigationHovered && "bg-white border-primary",
+            isActive &&
+              !isNavigationHovered &&
+              "border-2 bg-white text-black border-primary",
+            isOpen && "border-2 bg-white text-black border-primary"
           )}
         >
           {category.name}
@@ -77,7 +90,7 @@ function CategoryDropdown({
           <div
             className={cn(
               "opacity-0 absolute -bottom-3 w-0 h-0 border-l-[10px] border-r-[10px] border-b-[10px] border-l-transparent border-r-transparent border-b-black left-1/2 -translate-x-1/2",
-              isOpen && "opacity-100",
+              isOpen && "opacity-100"
             )}
           ></div>
         )}
@@ -93,7 +106,7 @@ function CategoryDropdown({
 }
 
 interface SubCategoryMenuProps {
-  category: Category;
+  category: CustomCategory;
   isOpen: boolean;
   position: { top: number; left: number };
 }
@@ -120,7 +133,7 @@ function SubCategoryMenu({ category, isOpen, position }: SubCategoryMenuProps) {
         className="text-black rounded-md overflow-hidden border w-60 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.2)] -translate-x-[2px] -translate-y-[2px]"
       >
         <div>
-          {category.subcategories?.map((sub: Category) => (
+          {category.subcategories?.map((sub) => (
             <Link
               key={sub.slug}
               href={"/"}
