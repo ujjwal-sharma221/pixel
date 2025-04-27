@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { LayoutList } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CustomCategory } from "../../../types";
+import { CategoriesSidebar } from "./categories-sidebar";
 import { useDropdownPosition } from "./use-dropdown-position";
 
 interface CategoriesProps {
@@ -17,15 +19,61 @@ export function Categories({ data }: CategoriesProps) {
   const measureRef = useRef<HTMLDivElement>(null);
   const viewAllRef = useRef<HTMLDivElement>(null);
 
-  const [visibleCount, setVisibleCount] = useState(data.length);
   const [isAnyHovered, setIsAnyHovered] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(data.length);
 
   const activeCategory = "all";
-  const activeCategoryIndex = data.find((cat) => cat.slug === activeCategory);
+  const activeCategoryIndex = data.findIndex(
+    (cat) => cat.slug === activeCategory
+  );
+  const isActiveCategoryHidden =
+    activeCategoryIndex >= visibleCount && activeCategoryIndex !== -1;
+
+  useEffect(() => {
+    const calculateVisible = () => {
+      if (!containerRef.current || !measureRef.current || !viewAllRef.current)
+        return;
+
+      const containerWidth = containerRef.current.offsetWidth;
+      const viewAllWidth = viewAllRef.current.offsetWidth;
+      const availableWidth = containerWidth - viewAllWidth;
+
+      const items = Array.from(measureRef.current.children);
+      let totalWidth = 0;
+      let visible = 0;
+
+      for (const item of items) {
+        const width = item.getBoundingClientRect().width;
+        if (totalWidth + width > availableWidth) break;
+        totalWidth += width;
+        visible++;
+      }
+
+      setVisibleCount(visible);
+    };
+
+    const resizeObserver = new ResizeObserver(calculateVisible);
+    resizeObserver.observe(containerRef.current!);
+
+    return () => resizeObserver.disconnect();
+  }, [data.length]);
 
   return (
     <div className="relative w-full">
-      <div className="flex flex-nowrap items-center gap-2">
+      {/* Calculation div */}
+
+      <CategoriesSidebar
+        data={data}
+        open={isSidebarOpen}
+        onOpenChange={setIsSidebarOpen}
+      />
+
+      <div
+        ref={measureRef}
+        className="absolute opacity-0 pointer-events-none flex"
+        style={{ position: "fixed", top: -9999, left: -9999 }}
+      >
         {data.map((category) => {
           return (
             <div key={category.id}>
@@ -37,6 +85,42 @@ export function Categories({ data }: CategoriesProps) {
             </div>
           );
         })}
+      </div>
+
+      {/* visible div */}
+      <div
+        ref={containerRef}
+        onMouseEnter={() => setIsAnyHovered(true)}
+        onMouseLeave={() => setIsAnyHovered(false)}
+        className="flex flex-nowrap items-center gap-2"
+      >
+        {data.slice(0, visibleCount).map((category) => {
+          return (
+            <div key={category.id}>
+              <CategoryDropdown
+                category={category}
+                isActive={activeCategory === category.slug}
+                isNavigationHovered={isAnyHovered}
+              />
+            </div>
+          );
+        })}
+
+        <div ref={viewAllRef} className="shrink-0">
+          <Button
+            variant="sketch"
+            className={cn(
+              "hover:bg-transparent bg-transparent text-black hover:border-2 hover:text-black rounded-full px-4",
+              isActiveCategoryHidden &&
+                !isAnyHovered &&
+                "border-2 bg-white text-black border-primary"
+            )}
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            View all
+            <LayoutList className="ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -66,24 +150,38 @@ function CategoryDropdown({
   const onMouseLeave = () => setIsOpen(false);
   const dropdownPosition = getDropdownPosition();
 
+  const toggleDropdown = () => {
+    if (category.subcategories.docs?.length) {
+      setIsOpen(!isOpen);
+    }
+  };
+
   return (
     <div
       className="relative"
       ref={dropdownRef}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onClick={toggleDropdown}
     >
       <div className="relative">
         <Button
+          asChild
+          variant="sketch"
           className={cn(
-            "hover:bg-transparent hover:border-2 hover:text-black rounded-full px-4",
+            "hover:bg-transparent hover:border-2 shadow-none bg-transparent text-black hover:text-black rounded-full px-4",
             isActive &&
               !isNavigationHovered &&
               "border-2 bg-white text-black border-primary",
             isOpen && "border-2 bg-white text-black border-primary"
           )}
         >
-          {category.name}
+          <Link
+            prefetch
+            href={`/${category.slug === "all" ? "" : category.slug}`}
+          >
+            {category.name}
+          </Link>
         </Button>
 
         {category.subcategories && category.subcategories.length > 0 && (
@@ -112,11 +210,7 @@ interface SubCategoryMenuProps {
 }
 
 function SubCategoryMenu({ category, isOpen, position }: SubCategoryMenuProps) {
-  if (
-    !isOpen ||
-    !category.subcategories ||
-    !category.subcategories.length === 0
-  ) {
+  if (!isOpen || !category.subcategories) {
     return null;
   }
 
@@ -136,7 +230,7 @@ function SubCategoryMenu({ category, isOpen, position }: SubCategoryMenuProps) {
           {category.subcategories?.map((sub) => (
             <Link
               key={sub.slug}
-              href={"/"}
+              href={`/${category.slug}/${sub.slug}`}
               className="w-full text-left p-4 hover:bg-black text-white hover:text-white flex justify-between items-center underline font-medium"
             >
               {sub.name}
