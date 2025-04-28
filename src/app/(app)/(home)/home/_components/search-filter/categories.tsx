@@ -6,12 +6,15 @@ import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CustomCategory } from "../../../types";
 import { CategoriesSidebar } from "./categories-sidebar";
 import { useDropdownPosition } from "./use-dropdown-position";
+import {
+  CategoriesGetManyOutput,
+  CategoriesGetSingleOutput,
+} from "@/modules/categories/types";
 
 interface CategoriesProps {
-  data: CustomCategory[];
+  data: CategoriesGetManyOutput;
 }
 
 export function Categories({ data }: CategoriesProps) {
@@ -63,11 +66,7 @@ export function Categories({ data }: CategoriesProps) {
     <div className="relative w-full">
       {/* Calculation div */}
 
-      <CategoriesSidebar
-        data={data}
-        open={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-      />
+      <CategoriesSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
 
       <div
         ref={measureRef}
@@ -127,7 +126,7 @@ export function Categories({ data }: CategoriesProps) {
 }
 
 interface CategoryDropdownProps {
-  category: CustomCategory;
+  category: CategoriesGetSingleOutput;
   isActive?: boolean;
   isNavigationHovered?: boolean;
 }
@@ -150,19 +149,12 @@ function CategoryDropdown({
   const onMouseLeave = () => setIsOpen(false);
   const dropdownPosition = getDropdownPosition();
 
-  const toggleDropdown = () => {
-    if (category.subcategories.docs?.length) {
-      setIsOpen(!isOpen);
-    }
-  };
-
   return (
     <div
       className="relative"
       ref={dropdownRef}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={toggleDropdown}
     >
       <div className="relative">
         <Button
@@ -204,7 +196,7 @@ function CategoryDropdown({
 }
 
 interface SubCategoryMenuProps {
-  category: CustomCategory;
+  category: CategoriesGetSingleOutput;
   isOpen: boolean;
   position: { top: number; left: number };
 }

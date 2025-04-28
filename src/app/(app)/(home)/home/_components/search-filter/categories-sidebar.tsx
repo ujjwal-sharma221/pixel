@@ -1,34 +1,39 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronRightIcon } from "lucide-react";
 
-import { CustomCategory } from "../../../types";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useTRPC } from "@/trpc/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronLeftIconAnimated } from "@/components/left-icon-animated";
-import { ChevronRightIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  CategoriesGetManyOutput,
+  CategoriesGetSingleOutput,
+} from "@/modules/categories/types";
 
 interface CategorySidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data: CustomCategory[];
 }
 
 export function CategoriesSidebar({
   onOpenChange,
   open,
-  data,
 }: CategorySidebarProps) {
-  const [parentCategories, setParentCategories] = useState<
-    CustomCategory[] | null
-  >(null);
+  const trpc = useTRPC();
+  const { data } = useQuery(trpc.categories.getMany.queryOptions());
+
+  const [parentCategories, setParentCategories] =
+    useState<CategoriesGetManyOutput | null>(null);
 
   const [selectedCategory, setSelectedCategory] =
-    useState<CustomCategory | null>(null);
+    useState<CategoriesGetSingleOutput | null>(null);
 
   const currentCategories = parentCategories ?? data ?? [];
 
@@ -40,9 +45,9 @@ export function CategoriesSidebar({
     onOpenChange(open);
   };
 
-  const handleCategoryClick = (category: CustomCategory) => {
+  const handleCategoryClick = (category: CategoriesGetSingleOutput) => {
     if (category.subcategories && category.subcategories.length > 0) {
-      setParentCategories(category.subcategories as CustomCategory[]);
+      setParentCategories(category.subcategories as CategoriesGetManyOutput);
       setSelectedCategory(category);
     } else {
       if (parentCategories && selectedCategory) {
