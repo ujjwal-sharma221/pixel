@@ -6,6 +6,7 @@ import {
   SearchFiltersLoading,
 } from "./_components/search-filter";
 import { getQueryClient, trpc } from "@/trpc/server";
+import { HomeNavbar } from "./_components/home-navbar";
 
 export default async function HomeLayout({
   children,
@@ -17,6 +18,7 @@ export default async function HomeLayout({
 
   return (
     <div className="flex flex-col min-h-screen">
+      <HomeNavbar />
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Suspense fallback={<SearchFiltersLoading />}>
           <SearchFilter />
