@@ -1,1 +1,1 @@
-export const AUTH_COOKIE = "pixel-token";
+export const AUTH_COOKIE = "payload-token";

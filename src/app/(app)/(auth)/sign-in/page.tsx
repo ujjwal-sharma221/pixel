@@ -1,4 +1,10 @@
+import { SignInForm } from "@/modules/auth/ui/sign-in-form";
+
 const SignInPage = () => {
-  return <div>Sign In Page</div>;
+  return (
+    <div>
+      <SignInForm />
+    </div>
+  );
 };
 export default SignInPage;
