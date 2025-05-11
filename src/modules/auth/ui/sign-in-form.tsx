@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, Eye, EyeOff, LoaderCircleIcon } from "lucide-react";
 
 import img1 from "@/assets/form-1.png";
@@ -17,6 +17,7 @@ import img4 from "@/assets/form-4.png";
 import { useTRPC } from "@/trpc/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { queue } from "sharp";
 
 export function SignInForm() {
   return (
@@ -50,14 +51,18 @@ export function SignInForm() {
 }
 
 function SignInFormComponent() {
-  const router = useRouter();
-
   const trpc = useTRPC();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const login = useMutation(
     trpc.auth.login.mutationOptions({
       onError: (error) => toast.error(error.message),
-      onSuccess: () => router.push("/home"),
-    })
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
+        router.push("/home");
+      },
+    }),
   );
 
   const UserSchema = type({

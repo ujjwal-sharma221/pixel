@@ -1,8 +1,8 @@
 import z from "zod";
 import { TRPCError } from "@trpc/server";
-import { cookies as getCookies, headers as getHeaders } from "next/headers";
+import { headers as getHeaders } from "next/headers";
 
-import { AUTH_COOKIE } from "../consonants";
+import { createAuthCookie } from "../auth-utils";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 export const authRouter = createTRPCRouter({
@@ -27,14 +27,14 @@ export const authRouter = createTRPCRouter({
           .max(265, "username too long")
           .regex(
             /^[a-z0-9][a-z0-9-]*[a-z0-9]$/,
-            "username can only contain lower letter, numbers and hyphens. It must start and end with a number or a character"
+            "username can only contain lower letter, numbers and hyphens. It must start and end with a number or a character",
           )
           .refine(
             (val) => !val.includes("--"),
-            "username must not contain consecutive hyphens"
+            "username must not contain consecutive hyphens",
           )
           .transform((val) => val.toLowerCase()),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const existingData = await ctx.payload.db.find({
@@ -75,13 +75,9 @@ export const authRouter = createTRPCRouter({
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Login failed" });
       }
 
-      const cookies = await getCookies();
-      cookies.set({
-        name: AUTH_COOKIE,
+      await createAuthCookie({
+        prefix: ctx.payload.config.cookiePrefix,
         value: data.token,
-        httpOnly: true,
-        path: "/",
-        // sameSite: "none",
       });
 
       return data;
@@ -92,7 +88,7 @@ export const authRouter = createTRPCRouter({
       z.object({
         email: z.string().email(),
         password: z.string().max(15, { message: "Password too long" }),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const data = await ctx.payload.login({
@@ -107,20 +103,11 @@ export const authRouter = createTRPCRouter({
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Login failed" });
       }
 
-      const cookies = await getCookies();
-      cookies.set({
-        name: AUTH_COOKIE,
+      await createAuthCookie({
+        prefix: ctx.payload.config.cookiePrefix,
         value: data.token,
-        httpOnly: true,
-        path: "/",
-        // sameSite: "none",
       });
 
       return data;
     }),
-
-  logout: baseProcedure.mutation(async () => {
-    const cookies = await getCookies();
-    cookies.delete(AUTH_COOKIE);
-  }),
 });

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, Eye, EyeOff, LoaderCircleIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -54,14 +54,18 @@ export function SignUpForm() {
 }
 
 function SignUpFormComponent() {
-  const router = useRouter();
-
   const trpc = useTRPC();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const register = useMutation(
     trpc.auth.register.mutationOptions({
       onError: (error) => toast.error(error.message),
-      onSuccess: () => router.push("/home"),
-    })
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
+        router.push("/home");
+      },
+    }),
   );
 
   const UserSchema = type({
@@ -130,7 +134,7 @@ function SignUpFormComponent() {
                     <p
                       className={cn(
                         !state.value && "hidden",
-                        "text-xs font-bold "
+                        "text-xs font-bold ",
                       )}
                     >
                       Your domain will be{" "}

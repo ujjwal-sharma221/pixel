@@ -2,7 +2,6 @@ import "server-only";
 
 import { cache } from "react";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { createTRPCContext } from "./init";
 import { appRouter } from "./routers/_app";
@@ -14,3 +13,5 @@ export const trpc = createTRPCOptionsProxy({
   router: appRouter,
   queryClient: getQueryClient,
 });
+
+export const caller = appRouter.createCaller(createTRPCContext);
