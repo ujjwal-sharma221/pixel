@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowRightIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import Logo from "@/assets/logo.svg";
 import { useTRPC } from "@/trpc/client";
-import CenterUnderline from "@/components/underline-center";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { Button } from "@/components/ui/button";
-import { ArrowRightIcon } from "lucide-react";
+import CenterUnderline from "@/components/underline-center";
 
 export function HomeNavbar() {
   const trpc = useTRPC();

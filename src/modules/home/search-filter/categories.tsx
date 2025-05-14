@@ -2,22 +2,24 @@
 
 import Link from "next/link";
 import { LayoutList } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CategoriesSidebar } from "./categories-sidebar";
 import { useDropdownPosition } from "./use-dropdown-position";
 import {
   CategoriesGetManyOutput,
   CategoriesGetSingleOutput,
 } from "@/modules/categories/types";
+import { CategoriesSidebar } from "@/modules/home/ui/categories-sidebar";
 
 interface CategoriesProps {
   data: CategoriesGetManyOutput;
 }
 
 export function Categories({ data }: CategoriesProps) {
+  const params = useParams();
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const viewAllRef = useRef<HTMLDivElement>(null);
@@ -26,7 +28,9 @@ export function Categories({ data }: CategoriesProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(data.length);
 
-  const activeCategory = "all";
+  const categoryParam = params.categories as string | undefined;
+  const activeCategory = categoryParam ?? "all";
+
   const activeCategoryIndex = data.findIndex(
     (cat) => cat.slug === activeCategory
   );
@@ -164,13 +168,13 @@ function CategoryDropdown({
             "hover:bg-transparent hover:border-2 shadow-none bg-transparent text-black hover:text-black rounded-full px-4",
             isActive &&
               !isNavigationHovered &&
-              "border-2 bg-white text-black border-primary",
+              "border-2 bg-primary  text-white border-white ",
             isOpen && "border-2 bg-white text-black border-primary"
           )}
         >
           <Link
             prefetch
-            href={`/${category.slug === "all" ? "" : category.slug}`}
+            href={category.slug === "all" ? "/home" : `/${category.slug}`}
           >
             {category.name}
           </Link>

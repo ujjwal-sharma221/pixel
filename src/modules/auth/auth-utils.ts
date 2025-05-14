@@ -12,5 +12,6 @@ export async function createAuthCookie({ prefix, value }: CreateCookieValues) {
     value,
     httpOnly: true,
     path: "/",
+    maxAge: 7 * 24 * 60 * 60,
   });
 }
