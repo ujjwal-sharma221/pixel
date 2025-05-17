@@ -7,11 +7,11 @@ import {
   ProductListSkeleton,
 } from "@/modules/products/ui/products-list";
 
-interface CategoryPageProps {
+interface SubCategoryPageProps {
   params: Promise<{ subCategory: string }>;
 }
 
-const CategoryPage = async ({ params }: CategoryPageProps) => {
+const SubCategoryPage = async ({ params }: SubCategoryPageProps) => {
   const { subCategory } = await params;
 
   const queryClient = getQueryClient();
@@ -30,4 +30,4 @@ const CategoryPage = async ({ params }: CategoryPageProps) => {
   );
 };
 
-export default CategoryPage;
+export default SubCategoryPage;

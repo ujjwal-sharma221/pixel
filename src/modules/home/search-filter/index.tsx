@@ -15,6 +15,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { DEFAULT_COLOR } from "../home-constants";
 
 export function SearchFilter() {
   const trpc = useTRPC();
@@ -28,6 +29,7 @@ export function SearchFilter() {
     (category) => category.slug === activeCategory
   );
   const activeCategoryName = activeCategoryData?.name || null;
+  const activeSubcategoryColor = activeCategoryData?.color || DEFAULT_COLOR;
 
   const activeSubcategory = params.subcategory as string | undefined;
   // const activeSubCategoryName =
@@ -35,7 +37,10 @@ export function SearchFilter() {
   //   null;
 
   return (
-    <div className="px-4 lg:px-12 py-8 border-b flex flex-col gap-4 w-full mt-6">
+    <div
+      className="px-4 lg:px-12 py-8 border-b flex flex-col gap-4 w-full mt-14 "
+      style={{ backgroundColor: activeSubcategoryColor }}
+    >
       <SearchInput />
       <div className="hidden lg:block">
         <Categories data={data} />
