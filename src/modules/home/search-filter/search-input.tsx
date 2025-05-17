@@ -21,9 +21,9 @@ export function SearchInput({ disabled }: SearchInputProps) {
   const session = useQuery(trpc.auth.session.queryOptions());
 
   return (
-    <div className="flex items-center gap-2 w-full">
+    <div className="flex items-center gap-2 w-full ">
       <CategoriesSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
-      <div className="relative w-full">
+      <div className="relative w-full ">
         <SearchIcon className="absolute left-2 top-1/2 -translate-y-1/2 size-4 text-neutral-500" />
         <Input className="p-6" placeholder="Search products" />
       </div>

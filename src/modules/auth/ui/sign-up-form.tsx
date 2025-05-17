@@ -36,7 +36,7 @@ export function SignUpForm() {
       <main className="container mx-auto px-6 py-12 max-w-3xl">
         <div className="mb-16">
           <h2 className="text-6xl font-bold mb-4">Hey There!</h2>
-          <h2 className="text-6xl font-bold mb-8">Let's Get Started</h2>
+          <h2 className="text-6xl font-bold mb-8">Let&apos;s Get Started</h2>
 
           <div className="h-px bg-gray-200 w-full my-8"></div>
 
@@ -65,7 +65,7 @@ function SignUpFormComponent() {
         await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
         router.push("/home");
       },
-    }),
+    })
   );
 
   const UserSchema = type({
@@ -134,7 +134,7 @@ function SignUpFormComponent() {
                     <p
                       className={cn(
                         !state.value && "hidden",
-                        "text-xs font-bold ",
+                        "text-xs font-bold "
                       )}
                     >
                       Your domain will be{" "}

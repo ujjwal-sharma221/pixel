@@ -16,7 +16,16 @@ export function ProductList({ categories }: ProductListProps) {
     })
   );
 
-  return <div>{JSON.stringify(data, null, 2)}</div>;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+      {data?.docs.map((p) => (
+        <div className="border rounded-md bg-white" key={p.id}>
+          <h2 className="text-xl font-medium">{p.name}</h2>
+          <h2>${p.price}</h2>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export const ProductListSkeleton = () => {

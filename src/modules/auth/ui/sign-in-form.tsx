@@ -17,7 +17,6 @@ import img4 from "@/assets/form-4.png";
 import { useTRPC } from "@/trpc/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { queue } from "sharp";
 
 export function SignInForm() {
   return (
@@ -62,7 +61,7 @@ function SignInFormComponent() {
         await queryClient.invalidateQueries(trpc.auth.session.queryFilter());
         router.push("/home");
       },
-    }),
+    })
   );
 
   const UserSchema = type({
@@ -90,7 +89,7 @@ function SignInFormComponent() {
     <div className="space-y-12">
       <div className="">
         <h3 className="text-4xl font-bold mb-8 flex gap-3">
-          Let's get you in{" "}
+          Let&apos;s get you in{" "}
         </h3>
 
         <div className="space-y-8">

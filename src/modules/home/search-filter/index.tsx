@@ -30,9 +30,9 @@ export function SearchFilter() {
   const activeCategoryName = activeCategoryData?.name || null;
 
   const activeSubcategory = params.subcategory as string | undefined;
-  const activeSubCategoryName =
-    data.find((subCategory) => subCategory.slug === activeSubcategory)?.name ||
-    null;
+  // const activeSubCategoryName =
+  //   data.find((subCategory) => subCategory.slug === activeSubcategory)?.name ||
+  //   null;
 
   return (
     <div className="px-4 lg:px-12 py-8 border-b flex flex-col gap-4 w-full mt-6">
