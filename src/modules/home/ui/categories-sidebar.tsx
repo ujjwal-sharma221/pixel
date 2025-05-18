@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sheet";
 import { useTRPC } from "@/trpc/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronLeftIconAnimated } from "@/components/left-icon-animated";
+import { ChevronLeftIconAnimated } from "@/components/icons/left-icon-animated";
 import { useQuery } from "@tanstack/react-query";
 import {
   CategoriesGetManyOutput,

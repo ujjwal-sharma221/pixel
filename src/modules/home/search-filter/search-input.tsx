@@ -8,7 +8,7 @@ import { useTRPC } from "@/trpc/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { BookTextAnimatedIcon } from "@/components/book-icon-animated";
+import { BookTextAnimatedIcon } from "@/components/icons/book-icon-animated";
 import { CategoriesSidebar } from "@/modules/home/ui/categories-sidebar";
 
 interface SearchInputProps {
