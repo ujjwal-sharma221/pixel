@@ -27,14 +27,14 @@ export const authRouter = createTRPCRouter({
           .max(265, "username too long")
           .regex(
             /^[a-z0-9][a-z0-9-]*[a-z0-9]$/,
-            "username can only contain lower letter, numbers and hyphens. It must start and end with a number or a character",
+            "username can only contain lower letter, numbers and hyphens. It must start and end with a number or a character"
           )
           .refine(
             (val) => !val.includes("--"),
-            "username must not contain consecutive hyphens",
+            "username must not contain consecutive hyphens"
           )
           .transform((val) => val.toLowerCase()),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const existingData = await ctx.payload.db.find({
@@ -54,12 +54,26 @@ export const authRouter = createTRPCRouter({
           message: "username already taken",
         });
 
+      const tenant = await ctx.payload.create({
+        collection: "tenants",
+        data: {
+          name: input.username,
+          slug: input.username,
+          stripeAccountId: "mock",
+        },
+      });
+
       await ctx.payload.create({
         collection: "users",
         data: {
           email: input.email,
           password: input.password,
           username: input.username,
+          tenants: [
+            {
+              tenant: tenant.id,
+            },
+          ],
         },
       });
 
@@ -88,7 +102,7 @@ export const authRouter = createTRPCRouter({
       z.object({
         email: z.string().email(),
         password: z.string().max(15, { message: "Password too long" }),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const data = await ctx.payload.login({

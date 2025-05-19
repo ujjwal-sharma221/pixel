@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useDropdownPosition } from "./use-dropdown-position";
 import {
   CategoriesGetManyOutput,
   CategoriesGetSingleOutput,
@@ -142,7 +141,6 @@ function CategoryDropdown({
 }: CategoryDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { getDropdownPosition } = useDropdownPosition(dropdownRef);
 
   const onMouseEnter = () => {
     if (category.subcategories) {
@@ -151,7 +149,6 @@ function CategoryDropdown({
   };
 
   const onMouseLeave = () => setIsOpen(false);
-  const dropdownPosition = getDropdownPosition();
 
   return (
     <div
@@ -190,11 +187,7 @@ function CategoryDropdown({
         )}
       </div>
 
-      <SubCategoryMenu
-        category={category}
-        isOpen={isOpen}
-        position={dropdownPosition}
-      />
+      <SubCategoryMenu category={category} isOpen={isOpen} />
     </div>
   );
 }
@@ -202,10 +195,9 @@ function CategoryDropdown({
 interface SubCategoryMenuProps {
   category: CategoriesGetSingleOutput;
   isOpen: boolean;
-  position: { top: number; left: number };
 }
 
-function SubCategoryMenu({ category, isOpen, position }: SubCategoryMenuProps) {
+function SubCategoryMenu({ category, isOpen }: SubCategoryMenuProps) {
   if (!isOpen || !category.subcategories) {
     return null;
   }
@@ -213,10 +205,7 @@ function SubCategoryMenu({ category, isOpen, position }: SubCategoryMenuProps) {
   const backgroundColor = category.color || "#F5F5F5";
 
   return (
-    <div
-      className="fixed z-100"
-      style={{ top: position.top, left: position.left }}
-    >
+    <div className="absolute z-100" style={{ top: "100%", left: 0 }}>
       <div className="h-3 w-60" />
       <div
         style={{ backgroundColor }}
