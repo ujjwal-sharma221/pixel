@@ -1,1 +1,1 @@
-export const DEFAULT_COLOR = "white";
+export const DEFAULT_COLOR = "#FBFBFB";

@@ -4,3 +4,7 @@ import { clsx, type ClassValue } from "clsx";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export function generateTenantUrl({ tenantSlug }: { tenantSlug: string }) {
+  return `/tenants/${tenantSlug}`;
+}

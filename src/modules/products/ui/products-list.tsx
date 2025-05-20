@@ -4,17 +4,18 @@ import { InboxIcon, LoaderCircleIcon } from "lucide-react";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
+import { ProductCard } from "./product-card";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_LIMIT } from "@/lib/constants";
 import { TextEffect } from "@/components/text-effect";
 import { useProductFilters } from "../hooks/use-product-hook";
-import { ProductCard, ProductCardSkeleton } from "./product-card";
 
 interface ProductListProps {
   categories?: string;
+  tenantSlug?: string;
 }
 
-export function ProductList({ categories }: ProductListProps) {
+export function ProductList({ categories, tenantSlug }: ProductListProps) {
   const [filters] = useProductFilters();
   const trpc = useTRPC();
   const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
@@ -22,6 +23,7 @@ export function ProductList({ categories }: ProductListProps) {
       trpc.products.getMany.infiniteQueryOptions(
         {
           ...filters,
+          tenantSlug,
           categorySlug: categories,
           limit: DEFAULT_LIMIT,
         },
@@ -54,8 +56,8 @@ export function ProductList({ categories }: ProductListProps) {
               id={p.id}
               name={p.name}
               imageUrl={p.image?.url}
-              authorName="arno"
-              authorImageUrl={undefined}
+              tenantSlug={p.tenant?.slug}
+              tenantImageUrl={p.tenant.image?.url}
               reviewRating={3}
               reviewCount={5}
               price={p.price}

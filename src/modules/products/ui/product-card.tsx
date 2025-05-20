@@ -1,24 +1,24 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Star } from "lucide-react";
-import { useTRPC } from "@/trpc/client";
-import { useParams } from "next/navigation";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
-import placeHolderImage from "@/assets/form-1.png";
 import { DEFAULT_LIMIT } from "@/lib/constants";
+import { generateTenantUrl } from "@/lib/utils";
+import placeHolderImage from "@/assets/form-1.png";
 
 interface ProductCardProps {
   id: string;
   name: string;
   price: number;
-  authorName: string;
+  tenantSlug: string;
   reviewRating: number;
   reviewCount: number;
   imageUrl?: string | null;
-  authorImageUrl?: string | null;
+  tenantImageUrl?: string | null;
 }
 
 export function ProductCard({
@@ -26,23 +26,19 @@ export function ProductCard({
   name,
   price,
   imageUrl,
-  authorName,
+  tenantSlug,
   reviewCount,
   reviewRating,
-  authorImageUrl,
+  tenantImageUrl,
 }: ProductCardProps) {
-  const params = useParams();
-  const trpc = useTRPC();
+  const router = useRouter();
 
-  const { data } = useSuspenseQuery(trpc.categories.getMany.queryOptions());
+  const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const categoryParam = params.categories as string | undefined;
-
-  const activeCategory = categoryParam || "all";
-  const activeCategoryData = data.find(
-    (category) => category.slug === activeCategory
-  );
-  const activeSubcategoryColor = activeCategoryData?.color || "primary";
+    router.push(generateTenantUrl({ tenantSlug: tenantSlug }));
+  };
 
   return (
     <Link href={`/products/${id}`}>
@@ -57,17 +53,17 @@ export function ProductCard({
         </div>
         <div className="p-4 border-y flex flex-col gap-3 flex-1">
           <h2 className="text-lg font-medium line-clamp-4">{name}</h2>
-          <div className="flex items-center gap-2" onClick={() => {}}>
-            {authorImageUrl && (
+          <div className="flex items-center gap-2" onClick={handleUserClick}>
+            {tenantImageUrl && (
               <Image
-                alt={authorName}
-                src={authorImageUrl}
+                alt={tenantSlug}
+                src={tenantImageUrl}
                 width={16}
                 height={16}
                 className="rounded-full shrink-0 size-[16px]"
               />
             )}
-            <p className="text-sm underline font-medium">{authorName}</p>
+            <p className="text-sm underline font-medium">{tenantSlug}</p>
           </div>
           {reviewCount > 0 && (
             <div className="flex items-center gap-1">
@@ -79,10 +75,7 @@ export function ProductCard({
           )}
         </div>
         <div className="p-4">
-          <div
-            className="relative text-white rounded-md px-2 py-1 w-fit"
-            style={{ backgroundColor: activeSubcategoryColor }}
-          >
+          <div className="relative text-white rounded-md px-2 py-1 w-fit bg-primary">
             <p className="text-sm font-medium">
               {new Intl.NumberFormat("en-Us", {
                 style: "currency",
