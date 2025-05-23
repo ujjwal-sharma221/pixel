@@ -3,16 +3,30 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { StarIcon } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import img from "@/assets/form-2.png";
 import { useTRPC } from "@/trpc/client";
+// import { CartButton } from "../ui/cart-button";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { StarRating } from "@/components/star-rating";
 import { formatCurrency, generateTenantUrl } from "@/lib/utils";
 import { LinkIconAnimated } from "@/components/icons/link-icon-animated";
+
+const CartButton = dynamic(
+  () => import("../ui/cart-button").then((mod) => mod.CartButton),
+  {
+    ssr: false,
+    loading: () => (
+      <Button disabled className="flex-1 bg-black text-white">
+        Add to Cart
+      </Button>
+    ),
+  }
+);
 
 interface ProductViewProps {
   productId: string;
@@ -96,9 +110,7 @@ export function ProductView({ productId, tenantSlug }: ProductViewProps) {
             <div className="border-t lg:border-t-0 lg:border-l border-black h-full">
               <div className="flex flex-col gap-4 p-6 border-b border-black">
                 <div className="flex flex-row items-center gap-2">
-                  <Button variant="sketch" className="flex-1">
-                    Add to Cart
-                  </Button>
+                  <CartButton productId={productId} tenantSlug={tenantSlug} />
                   <Button
                     variant="sketch"
                     className="size-12"
