@@ -7,8 +7,8 @@ import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { DEFAULT_LIMIT } from "@/lib/constants";
-import { generateTenantUrl } from "@/lib/utils";
 import placeHolderImage from "@/assets/form-1.png";
+import { cn, generateTenantUrl } from "@/lib/utils";
 
 interface ProductCardProps {
   id: string;
@@ -41,7 +41,7 @@ export function ProductCard({
   };
 
   return (
-    <Link href={`/products/${id}`}>
+    <Link href={`${generateTenantUrl({ tenantSlug })}/products/${id}`}>
       <div className="overflow-hidden border rounded-md h-full flex flex-col hover:border-neutral-200 hover:border-2">
         <div className="relative aspect-square">
           <Image
@@ -91,9 +91,14 @@ export function ProductCard({
   );
 }
 
-export function ProductCardSkeleton() {
+export function ProductCardSkeleton({ narrowView }: { narrowView?: boolean }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+    <div
+      className={cn(
+        "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4",
+        narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3"
+      )}
+    >
       {[...Array(DEFAULT_LIMIT)].map((_, idx) => (
         <div
           key={idx}

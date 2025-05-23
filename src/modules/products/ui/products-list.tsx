@@ -3,6 +3,7 @@
 import { InboxIcon, LoaderCircleIcon } from "lucide-react";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 
+import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { ProductCard } from "./product-card";
 import { Button } from "@/components/ui/button";
@@ -13,9 +14,14 @@ import { useProductFilters } from "../hooks/use-product-hook";
 interface ProductListProps {
   categories?: string;
   tenantSlug?: string;
+  narrowView?: boolean;
 }
 
-export function ProductList({ categories, tenantSlug }: ProductListProps) {
+export function ProductList({
+  categories,
+  narrowView,
+  tenantSlug,
+}: ProductListProps) {
   const [filters] = useProductFilters();
   const trpc = useTRPC();
   const { data, hasNextPage, isFetchingNextPage, fetchNextPage } =
@@ -47,7 +53,12 @@ export function ProductList({ categories, tenantSlug }: ProductListProps) {
   }
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+      <div
+        className={cn(
+          "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4",
+          narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3"
+        )}
+      >
         {data?.pages
           .flatMap((page) => page.docs)
           .map((p) => (

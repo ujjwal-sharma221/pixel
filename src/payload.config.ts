@@ -1,4 +1,3 @@
-// storage-adapter-import-placeholder
 import path from "path";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
@@ -8,6 +7,7 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { payloadCloudPlugin } from "@payloadcms/payload-cloud";
 import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
 
+import { Config } from "./payload-types";
 import { Tags } from "./collections/Tags";
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
@@ -37,7 +37,7 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
-    multiTenantPlugin({
+    multiTenantPlugin<Config>({
       collections: {
         products: {},
       },
