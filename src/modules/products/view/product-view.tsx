@@ -4,12 +4,11 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { StarIcon } from "lucide-react";
+import { ArrowRightIcon, Library, StarIcon } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import img from "@/assets/form-2.png";
 import { useTRPC } from "@/trpc/client";
-// import { CartButton } from "../ui/cart-button";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { StarRating } from "@/components/star-rating";
@@ -110,7 +109,15 @@ export function ProductView({ productId, tenantSlug }: ProductViewProps) {
             <div className="border-t lg:border-t-0 lg:border-l border-black h-full">
               <div className="flex flex-col gap-4 p-6 border-b border-black">
                 <div className="flex flex-row items-center gap-2">
-                  <CartButton productId={productId} tenantSlug={tenantSlug} />
+                  {data.isPurchased ? (
+                    <CartButton
+                      isPurchased={data.isPurchased}
+                      productId={productId}
+                      tenantSlug={tenantSlug}
+                    />
+                  ) : (
+                    <CartButton productId={productId} tenantSlug={tenantSlug} />
+                  )}
                   <Button
                     variant="sketch"
                     className="size-12"

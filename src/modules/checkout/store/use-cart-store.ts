@@ -10,14 +10,13 @@ interface CartState {
 
   clearAllCarts: () => void;
   clearCart: (tenantSlug: string) => void;
-  getCartByTenant: (tenantSlug: string) => string[];
   addProduct: (tenantSlug: string, productId: string) => void;
   removeProduct: (tenantSlug: string, productId: string) => void;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       tenantCarts: {},
       addProduct: (tenantSlug, productId) =>
         set((state) => ({
@@ -56,9 +55,6 @@ export const useCartStore = create<CartState>()(
         })),
 
       clearAllCarts: () => set({ tenantCarts: {} }),
-
-      getCartByTenant: (tenantSlug) =>
-        get().tenantCarts[tenantSlug]?.productIds || [],
     }),
     {
       name: "pixel-cart",
