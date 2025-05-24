@@ -10,7 +10,8 @@
     "lint": "next lint",
     "generate:types": "payload generate:types",
     "db:fresh": "payload migrate:fresh",
-    "db:seed": "payload run src/seed.ts"
+    "db:seed": "payload run src/seed.ts",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/stripe/webhooks"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -50,6 +51,7 @@
     "server-only": "^0.0.1",
     "sharp": "^0.34.1",
     "sonner": "^2.0.3",
+    "stripe": "^18.1.1",
     "superjson": "^2.2.2",
     "tailwind-merge": "^3.2.0",
     "tailwind-variants": "^1.0.0",

@@ -2,8 +2,9 @@
 
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { InboxIcon, Loader2 } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
 import { generateTenantUrl } from "@/lib/utils";
@@ -11,27 +12,55 @@ import { useCart } from "../hooks/use-cart-hook";
 import { CheckoutItem } from "../ui/checkout-item";
 import { TextEffect } from "@/components/text-effect";
 import { CheckoutSidebar } from "../ui/checkout-sidebar";
+import { useCheckoutStates } from "../hooks/use-checkout-states";
 
 interface CheckoutViewProps {
   tenantSlug: string;
 }
 
 export function CheckoutView({ tenantSlug }: CheckoutViewProps) {
-  const { productIds, clearAllCarts, removeProduct } = useCart(tenantSlug);
+  const router = useRouter();
+  const { productIds, removeProduct, clearCart } = useCart(tenantSlug);
+  const [states, setStates] = useCheckoutStates();
 
   const trpc = useTRPC();
   const { data, error, isLoading } = useQuery(
     trpc.checkout.getProducts.queryOptions({ ids: productIds })
   );
 
+  const purchase = useMutation(
+    trpc.checkout.purchase.mutationOptions({
+      onMutate: () => {
+        setStates({ success: false, cancel: false });
+      },
+      onSuccess: (data) => {
+        window.location.href = data.url;
+      },
+      onError: (error) => {
+        if (error.data?.code === "UNAUTHORIZED") {
+          router.push("/sign-in");
+        }
+        toast.error(error.message);
+      },
+    })
+  );
+
+  useEffect(() => {
+    if (states.success) {
+      setStates({ success: false, cancel: false });
+      clearCart();
+      router.push("/products");
+    }
+  }, [states.success, clearCart, router, setStates]);
+
   useEffect(() => {
     if (!error) return;
 
     if (error.data?.code === "NOT_FOUND") {
-      clearAllCarts();
+      clearCart();
       toast.warning("Invalid products found, cart has been cleared");
     }
-  }, [error, clearAllCarts]);
+  }, [error, clearCart]);
 
   if (isLoading) {
     return (
@@ -87,9 +116,9 @@ export function CheckoutView({ tenantSlug }: CheckoutViewProps) {
         <div className="lg:col-span-3">
           <CheckoutSidebar
             total={data?.totalPrice ?? 0}
-            onCheckout={() => {}}
-            isCancelled={true}
-            isPending={false}
+            onPurchase={() => purchase.mutate({ tenantSlug, productIds })}
+            isCancelled={states.cancel}
+            disabled={purchase.isPending}
           />
         </div>
       </div>
