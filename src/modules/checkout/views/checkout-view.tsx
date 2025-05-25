@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { InboxIcon, Loader2 } from "lucide-react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
 import { generateTenantUrl } from "@/lib/utils";
@@ -28,6 +28,8 @@ export function CheckoutView({ tenantSlug }: CheckoutViewProps) {
     trpc.checkout.getProducts.queryOptions({ ids: productIds })
   );
 
+  const queryClient = useQueryClient();
+
   const purchase = useMutation(
     trpc.checkout.purchase.mutationOptions({
       onMutate: () => {
@@ -49,9 +51,17 @@ export function CheckoutView({ tenantSlug }: CheckoutViewProps) {
     if (states.success) {
       setStates({ success: false, cancel: false });
       clearCart();
-      router.push("/products");
+      queryClient.invalidateQueries(trpc.library.getMany.infiniteQueryFilter());
+      router.push("/library");
     }
-  }, [states.success, clearCart, router, setStates]);
+  }, [
+    states.success,
+    clearCart,
+    router,
+    setStates,
+    queryClient,
+    trpc.library.getMany,
+  ]);
 
   useEffect(() => {
     if (!error) return;

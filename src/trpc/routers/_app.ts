@@ -2,6 +2,7 @@ import { createTRPCRouter } from "../init";
 
 import { tagsRouter } from "@/modules/tags/server/procedure";
 import { authRouter } from "@/modules/auth/server/procedure";
+import { reviewRouter } from "@/modules/reviews/server/procedures";
 import { tenantsRouter } from "@/modules/tenants/server/procedure";
 import { libraryRouter } from "@/modules/library/server/procedures";
 import { checkoutRouter } from "@/modules/checkout/server/procedures";
@@ -11,6 +12,7 @@ import { categoriesRouter } from "@/modules/categories/server/procedures";
 export const appRouter = createTRPCRouter({
   auth: authRouter,
   tags: tagsRouter,
+  reviews: reviewRouter,
   library: libraryRouter,
   tenants: tenantsRouter,
   products: productsRouter,
