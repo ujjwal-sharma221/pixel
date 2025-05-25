@@ -166,6 +166,9 @@ export interface Tenant {
   name: string;
   slug: string;
   image?: (string | null) | Media;
+  /**
+   * Stripe account ID associated with your shop
+   */
   stripeAccountId: string;
   /**
    * You cannot create products until you have verified your stripe details
@@ -225,6 +228,10 @@ export interface Product {
   refundPolicy?: ('30-day' | '14-day' | '3-day' | '1-day') | null;
   category?: (string | null) | Category;
   tags?: (string | Tag)[] | null;
+  /**
+   * Protected content. Only visible to consumers after purchase. Add product related details
+   */
+  content?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -413,6 +420,7 @@ export interface ProductsSelect<T extends boolean = true> {
   refundPolicy?: T;
   category?: T;
   tags?: T;
+  content?: T;
   updatedAt?: T;
   createdAt?: T;
 }

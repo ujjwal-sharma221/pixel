@@ -10,6 +10,7 @@ import { multiTenantPlugin } from "@payloadcms/plugin-multi-tenant";
 import { Config } from "./payload-types";
 import { Tags } from "./collections/Tags";
 import { Users } from "./collections/Users";
+import { isSuperAdmin } from "./lib/access";
 import { Media } from "./collections/Media";
 import { Orders } from "./collections/Orders";
 import { Tenants } from "./collections/Tenants";
@@ -55,10 +56,7 @@ export default buildConfig({
       tenantsArrayField: {
         includeDefaultField: false,
       },
-      userHasAccessToAllTenants: (user) =>
-        Boolean(user?.roles?.includes("super-admin")),
+      userHasAccessToAllTenants: (user) => isSuperAdmin(user),
     }),
-
-    // storage-adapter-placeholder
   ],
 });
