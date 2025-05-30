@@ -2,6 +2,7 @@ import z from "zod";
 import { TRPCError } from "@trpc/server";
 import { headers as getHeaders } from "next/headers";
 
+import { stripe } from "@/lib/stripe";
 import { createAuthCookie } from "../auth-utils";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
@@ -54,12 +55,20 @@ export const authRouter = createTRPCRouter({
           message: "username already taken",
         });
 
+      const account = await stripe.accounts.create({});
+
+      if (!account)
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Failed to create stripe account",
+        });
+
       const tenant = await ctx.payload.create({
         collection: "tenants",
         data: {
           name: input.username,
           slug: input.username,
-          stripeAccountId: "mock",
+          stripeAccountId: account.id,
         },
       });
 

@@ -15,6 +15,7 @@ export const Products: CollectionConfig = {
   },
   admin: {
     useAsTitle: "name",
+    description: "You must submit your stripe details before creating products",
   },
   fields: [
     { name: "name", type: "text", required: true },

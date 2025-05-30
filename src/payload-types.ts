@@ -215,6 +215,8 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * You must submit your stripe details before creating products
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
  */
